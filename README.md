@@ -157,7 +157,7 @@ http localhost:8084/products/1
 
 # Polyglot
 
-Reservation, Deposit, Customerservice는 H2로 구현하고 Restaurant 서비스의 경우 Hsql로 구현하여 MSA간의 서로 다른 종류의 Database에도 문제없이 작동하여 다형성을 만족하는지 확인하였다.
+Order, Deposit, MyPage는 H2로 구현하고 Restaurant 서비스의 경우 Hsql로 구현하여 MSA간의 서로 다른 종류의 Database에도 문제없이 작동하여 다형성을 만족하는지 확인하였다.
 
 - order, deposit, mypage pom.xml 파일 설정
 
@@ -206,18 +206,24 @@ Reservation, Deposit, Customerservice는 H2로 구현하고 Restaurant 서비스
 ```
 # 결제 (deposit) 서비스를 잠시 내려놓음
 # 예약 처리
-kubectl delete deploy deposit -n skteam02
+kubectl delete deploy deposit -n skuser03
 ```
+![image](https://user-images.githubusercontent.com/47556407/108035947-f09bde80-707a-11eb-82d3-7972e611fafc.png)
+
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 예치금 결제 시스템이 장애가 나면 예약도 못받는다는 것을 확인
-![20210215_152729_13](https://user-images.githubusercontent.com/77368612/107912870-aa734c00-6fa2-11eb-9b22-b78f27d39cb9.png)
+
+![image](https://user-images.githubusercontent.com/47556407/108036023-090bf900-707b-11eb-9c11-16fa02888f4b.png)
     
 　  
 　  
 ```
 # 결재(deposit)서비스 재기동
-kubectl create deploy deposit --image=skteam02.azurecr.io/deposit:latest -n skteam02
+kubectl create deploy deposit --image=skuser03.azurecr.io/deposit:latest -n skuser03
 ```
-![20210215_152729_14](https://user-images.githubusercontent.com/77368612/107912865-a9421f00-6fa2-11eb-80f8-309050271489.png)
+![image](https://user-images.githubusercontent.com/47556407/108036520-abc47780-707b-11eb-8d30-1b7667a05a4d.png)
+
+![image](https://user-images.githubusercontent.com/47556407/108036597-c860af80-707b-11eb-8b36-d34ed75c379f.png)
+
     
 　  
 　  
@@ -227,20 +233,21 @@ kubectl create deploy deposit --image=skteam02.azurecr.io/deposit:latest -n skte
    
 # Gateway
 - gateway > application.yml
-![20210215_154035_15](https://user-images.githubusercontent.com/77368612/107913732-43569700-6fa4-11eb-96e4-5ffac8ad85cd.png)
+![image](https://user-images.githubusercontent.com/47556407/108038063-c0097400-707d-11eb-9944-8b734b2f7dcf.png)
     
 　  
 　  
 
 - Gateway의 External-IP 확인
 
-![20210215_154035_16](https://user-images.githubusercontent.com/77368612/107913733-43ef2d80-6fa4-11eb-98b4-dbe191a93c83.png)
+![image](https://user-images.githubusercontent.com/47556407/108039061-f4c9fb00-707e-11eb-8409-c7bd37228b03.png)
     
 　  
 　  
-- External-IP 로 Reservation서비스에 접근
+- External-IP 로 order서비스에 접근
 
-![20210215_154035_17](https://user-images.githubusercontent.com/77368612/107913727-42be0080-6fa4-11eb-90b5-cf7b0e0cbe04.png)
+![image](https://user-images.githubusercontent.com/47556407/108038613-6786a680-707e-11eb-8dd1-92c3e04807bc.png)
+
     
 　  
 　      
@@ -253,37 +260,37 @@ kubectl create deploy deposit --image=skteam02.azurecr.io/deposit:latest -n skte
 
 ```
 # Namespace 생성
-kubectl create ns skteam02
+kubectl create ns skuser03
 
 # 소스를 가져와 각각의 MSA 별로 빌드 진행
 
 # 도커라이징 : Azure Registry에 Image Push 
-az acr build --registry skteam02 --image skteam02.azurecr.io/reservation:latest .  
-az acr build --registry skteam02 --image skteam02.azurecr.io/deposit:latest . 
-az acr build --registry skteam02 --image skteam02.azurecr.io/restaurant:latest .   
-az acr build --registry skteam02 --image skteam02.azurecr.io/customercenter:latest .   
-az acr build --registry skteam02 --image skteam02.azurecr.io/gateway:latest . 
+az acr build --registry skuser03 --image skuser03.azurecr.io/order:latest .  
+az acr build --registry skuser03 --image skuser03.azurecr.io/deposit:latest . 
+az acr build --registry skuser03 --image skuser03.azurecr.io/product:latest .   
+az acr build --registry skuser03 --image skuser03.azurecr.io/mypage:latest .   
+az acr build --registry skuser03 --image skuser03.azurecr.io/gateway:latest . 
 
 # 컨테이터라이징 : Deploy, Service 생성
-kubectl create deploy reservation --image=skteam02.azurecr.io/reservation:latest -n skteam02
-kubectl expose deploy reservation --type="ClusterIP" --port=8080 -n skteam02
-kubectl create deploy deposit --image=skteam02.azurecr.io/deposit:latest -n skteam02
-kubectl expose deploy deposit --type="ClusterIP" --port=8080 -n skteam02
-kubectl create deploy restaurant --image=skteam02.azurecr.io/restaurant:latest -n skteam02
-kubectl expose deploy restaurant --type="ClusterIP" --port=8080 -n skteam02
-kubectl create deploy customercenter --image=skteam02.azurecr.io/customercenter:latest -n skteam02
-kubectl expose deploy customercenter --type="ClusterIP" --port=8080 -n skteam02
-kubectl create deploy gateway --image=skteam02.azurecr.io/gateway:latest -n skteam02
-kubectl expose deploy gateway --type=LoadBalancer --port=8080 -n skteam02
+kubectl create deploy order --image=skuser03.azurecr.io/order:latest -n skuser03
+kubectl expose deploy order --type="ClusterIP" --port=8080 -n skuser03
+kubectl create deploy deposit --image=skuser03.azurecr.io/deposit:latest -n skuser03
+kubectl expose deploy deposit --type="ClusterIP" --port=8080 -n skuser03
+kubectl create deploy product --image=skuser03.azurecr.io/product:latest -n skuser03
+kubectl expose deploy product --type="ClusterIP" --port=8080 -n skuser03
+kubectl create deploy mypage --image=skuser03.azurecr.io/mypage:latest -n skuser03
+kubectl expose deploy mypage --type="ClusterIP" --port=8080 -n skuser03
+kubectl create deploy gateway --image=skuser03.azurecr.io/gateway:latest -n skuser03
+kubectl expose deploy gateway --type=LoadBalancer --port=8080 -n skuser03
 
-#kubectl get all -n skteam02
+#kubectl get all -n skuser03
 ```
     
 　  
 　  
 - Deploy 확인
 
-![20210215_155905_18](https://user-images.githubusercontent.com/77368612/107914935-c7118300-6fa6-11eb-83c3-169869bcd5ce.png)
+![image](https://user-images.githubusercontent.com/47556407/108038482-3908cb80-707e-11eb-83fe-20dcc7094fc6.png)
     
 　  
 　  
