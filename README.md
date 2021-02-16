@@ -136,21 +136,21 @@ mvn spring-boot:run
 # order 서비스의 예약처리
 http http://52.231.96.78:8080/orders productId=10 qty=5
 ```
-https://user-images.githubusercontent.com/47556407/108030441-972fb180-7072-11eb-85a8-b76ded12e852.png
+![image](https://user-images.githubusercontent.com/47556407/108030441-972fb180-7072-11eb-85a8-b76ded12e852.png)
 
 
 ```
 # order 서비스의 주문상태 확인
 http localhost:8081/orders/1
 ```
-https://user-images.githubusercontent.com/47556407/108030523-bcbcbb00-7072-11eb-8978-6fa1fd65bbd1.png
+![image](https://user-images.githubusercontent.com/47556407/108030523-bcbcbb00-7072-11eb-8978-6fa1fd65bbd1.png)
 
 ```
 # product 서비스의 주문현황 확인
 http localhost:8084/products/1
 
 ```
-https://user-images.githubusercontent.com/47556407/108032100-48374b80-7075-11eb-933a-49ab5edf49a5.png
+![image](https://user-images.githubusercontent.com/47556407/108032100-48374b80-7075-11eb-933a-49ab5edf49a5.png)
 　  
 　  
    
