@@ -189,15 +189,15 @@ Reservation, Deposit, Customerservice는 H2로 구현하고 Restaurant 서비스
     
 - 주문금액 결제서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현  (Depositservice.java)
 
-![20210215_152121_11](https://user-images.githubusercontent.com/77368612/107912260-8d8a4900-6fa1-11eb-801d-61eaf1bf8fa0.png)
+![image](https://user-images.githubusercontent.com/47556407/108034489-f1cc0c00-7078-11eb-8961-cb650db2b9fa.png)
 
     
 　  
     
 
-- 예약을 받은 직후(@PostPersist) 예치금 결제를 요청하도록 처리
+- 주문을 받은 직후(@PostPersist) 주문금액 결제를 요청하도록 처리
 
-![20210215_152121_12](https://user-images.githubusercontent.com/77368612/107912264-8ebb7600-6fa1-11eb-8f14-3468a9a51478.png)
+![image](https://user-images.githubusercontent.com/47556407/108034722-453e5a00-7079-11eb-93f0-ed180ae81dba.png)
     
 　  
 　  
