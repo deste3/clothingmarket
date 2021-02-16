@@ -159,15 +159,15 @@ http localhost:8084/products/1
 
 Reservation, Deposit, Customerservice는 H2로 구현하고 Restaurant 서비스의 경우 Hsql로 구현하여 MSA간의 서로 다른 종류의 Database에도 문제없이 작동하여 다형성을 만족하는지 확인하였다.
 
-- reservation, deposit, customercenter의 pom.xml 파일 설정
+- order, deposit, mypage pom.xml 파일 설정
 
-![20210215_151200_10](https://user-images.githubusercontent.com/77368612/107911566-359f1280-6fa0-11eb-98ff-a15e7f95d942.png)
+![image](https://user-images.githubusercontent.com/47556407/108033377-44a4c400-7077-11eb-80c6-7cae6864f161.png)
     
 　  
  
-- restaurant의 pom.xml 파일 설정
+- product의 pom.xml 파일 설정
 
-![20210215_151200_9](https://user-images.githubusercontent.com/77368612/107911570-3637a900-6fa0-11eb-818e-df269a61ae2d.png)
+![image](https://user-images.githubusercontent.com/47556407/108033035-b8929c80-7076-11eb-892f-fcbfcc448f98.png)
     
 　  
     
@@ -177,7 +177,7 @@ Reservation, Deposit, Customerservice는 H2로 구현하고 Restaurant 서비스
 
 # Req/Resp
 ```
-1. 분석단계에서의 조건 중 하나로 예약(reservation)->예치금 결제(deposit) 간의 호출은 동기식 일관성을 유지하는
+1. 분석단계에서의 조건 중 하나로 주문(order)->주문금액 결제(deposit) 간의 호출은 동기식 일관성을 유지하는
 트랜잭션으로 처리하기로 하였다. 
 
 2. 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 
@@ -187,7 +187,7 @@ Reservation, Deposit, Customerservice는 H2로 구현하고 Restaurant 서비스
 　  
     
     
-- 예치금 결제서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현  (Depositservice.java)
+- 주문금액 결제서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현  (Depositservice.java)
 
 ![20210215_152121_11](https://user-images.githubusercontent.com/77368612/107912260-8d8a4900-6fa1-11eb-801d-61eaf1bf8fa0.png)
 
