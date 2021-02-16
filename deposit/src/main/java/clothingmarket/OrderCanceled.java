@@ -21,11 +21,11 @@ public class OrderCanceled extends AbstractEvent {
     public void setProductId(String ProductId) {
         this.ProductId = ProductId;
     }
-    public Integer getQuantity() {
+    public Integer getQty() {
         return Qty;
     }
 
-    public void setQuantity(Integer Qty) {
+    public void setQty(Integer Qty) {
         this.Qty = Qty;
     }
     public String getStatus() {

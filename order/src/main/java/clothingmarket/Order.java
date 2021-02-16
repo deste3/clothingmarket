@@ -15,33 +15,6 @@ public class Order {
     private Integer qty;
     private String status;
 
-    @PostPersist
-    public void onPostPersist(){
-        Ordered ordered = new Ordered();
-        BeanUtils.copyProperties(this, ordered);
-        ordered.publishAfterCommit();
-
-        //Following code causes dependency to external APIs
-        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
-
-        .external.Deposit deposit = new .external.Deposit();
-        // mappings goes here
-        Application.applicationContext.getBean(.external.DepositService.class)
-            .pay(deposit);
-
-
-    }
-
-    @PrePersist
-    public void onPrePersist(){
-        OrderCanceled orderCanceled = new OrderCanceled();
-        BeanUtils.copyProperties(this, orderCanceled);
-        orderCanceled.publishAfterCommit();
-
-
-    }
-
-
     public Long getId() {
         return id;
     }
@@ -71,7 +44,40 @@ public class Order {
         this.status = status;
     }
 
+    @PostPersist
+    public void onPostPersist(){
+        Ordered ordered = new Ordered();
+        BeanUtils.copyProperties(this, ordered);
+        ordered.publishAfterCommit();
+
+        //Following code causes dependency to external APIs
+        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
+
+        clothingmarket.external.Deposit deposit = new clothingmarket.external.Deposit();
+        deposit.setOrderId(this.getId());
+        deposit.setProductId(this.getProductId());
+        deposit.setQty(this.getQty());
+        deposit.setStatus("PayCompleted");
+        
+        // mappings goes here
+        OrderApplication.applicationContext.getBean(clothingmarket.external.DepositService.class)
+            .pay(deposit);
 
 
+    }
+
+    @PrePersist
+    public void onPrePersist(){
+        /*OrderCanceled orderCanceled = new OrderCanceled();
+        BeanUtils.copyProperties(this, orderCanceled);
+        orderCanceled.publishAfterCommit();
+        */
+        try {
+            Thread.currentThread().sleep((long) (800 + Math.random() * 220));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }

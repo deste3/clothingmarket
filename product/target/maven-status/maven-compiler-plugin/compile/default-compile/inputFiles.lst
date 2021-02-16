@@ -1,0 +1,10 @@
+/home/project/default-env/clothingmarket/product/src/main/java/clothingmarket/DeliveryStarted.java
+/home/project/default-env/clothingmarket/product/src/main/java/clothingmarket/PayCompleted.java
+/home/project/default-env/clothingmarket/product/src/main/java/clothingmarket/PayCanceled.java
+/home/project/default-env/clothingmarket/product/src/main/java/clothingmarket/PolicyHandler.java
+/home/project/default-env/clothingmarket/product/src/main/java/clothingmarket/AbstractEvent.java
+/home/project/default-env/clothingmarket/product/src/main/java/clothingmarket/ProductController.java
+/home/project/default-env/clothingmarket/product/src/main/java/clothingmarket/ProductApplication.java
+/home/project/default-env/clothingmarket/product/src/main/java/clothingmarket/Product.java
+/home/project/default-env/clothingmarket/product/src/main/java/clothingmarket/config/kafka/KafkaProcessor.java
+/home/project/default-env/clothingmarket/product/src/main/java/clothingmarket/ProductRepository.java

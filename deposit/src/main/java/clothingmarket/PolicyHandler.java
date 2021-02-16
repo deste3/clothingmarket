@@ -15,11 +15,21 @@ public class PolicyHandler{
 
     }
 
+    @Autowired
+    DepositRepository depositRepository;
+
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverOrderCanceled_(@Payload OrderCanceled orderCanceled){
 
         if(orderCanceled.isMe()){
             System.out.println("##### listener  : " + orderCanceled.toJson());
+
+            Deposit deposit = new Deposit();
+            deposit.setOrderId(orderCanceled.getId());
+            deposit.setProductId(orderCanceled.getProductId());
+            deposit.setQty(orderCanceled.getQty());
+            deposit.setStatus("PayCanceled");
+            depositRepository.save(deposit);
         }
     }
 

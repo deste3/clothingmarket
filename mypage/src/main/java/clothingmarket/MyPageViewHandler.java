@@ -21,15 +21,16 @@ public class MyPageViewHandler {
     public void whenOrdered_then_CREATE_1 (@Payload Ordered ordered) {
         try {
             if (ordered.isMe()) {
+
                 // view 객체 생성
-                  = new ();
+                MyPage mypage  = new MyPage();
                 // view 객체에 이벤트의 Value 를 set 함
-                .setId(.getId());
-                .setProductId(.getProductId());
-                .setQty(.getQuantity());
-                .setStatus(.getStatus());
+                mypage.setId(ordered.getId());
+                mypage.setProductId(ordered.getProductId());
+                mypage.setQty(ordered.getQuantity());
+                mypage.setStatus(ordered.getStatus());
                 // view 레파지 토리에 save
-                Repository.save();
+                myPageRepository.save(mypage);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -42,11 +43,30 @@ public class MyPageViewHandler {
         try {
             if (deliveryStarted.isMe()) {
                 // view 객체 조회
-                List<> List = Repository.findByOrderId(.getOrderId());
-                for(  : List){
+                List<MyPage> mypageList = myPageRepository.findByOrderId(deliveryStarted.getOrderId());
+                for(MyPage mypage  : mypageList){
                     // view 객체에 이벤트의 eventDirectValue 를 set 함
+                    mypage.setStatus(deliveryStarted.getStatus());
                     // view 레파지 토리에 save
-                    Repository.save();
+                    myPageRepository.save(mypage);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @StreamListener(KafkaProcessor.INPUT)
+    public void whenPayCanceled_then_UPDATE_2(@Payload PayCanceled payCanceled) {
+        try {
+            if (payCanceled.isMe()) {
+                // view 객체 조회
+                List<MyPage> mypageList = myPageRepository.findByOrderId(payCanceled.getOrderId());
+                for(MyPage mypage  : mypageList){
+                    // view 객체에 이벤트의 eventDirectValue 를 set 함
+                    mypage.setStatus(payCanceled.getStatus());
+                    // view 레파지 토리에 save
+                    myPageRepository.save(mypage);
                 }
             }
         }catch (Exception e){

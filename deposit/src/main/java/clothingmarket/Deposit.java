@@ -18,14 +18,15 @@ public class Deposit {
 
     @PostPersist
     public void onPostPersist(){
-        PayCompleted payCompleted = new PayCompleted();
-        BeanUtils.copyProperties(this, payCompleted);
-        payCompleted.publishAfterCommit();
-
-
-        PayCanceled payCanceled = new PayCanceled();
-        BeanUtils.copyProperties(this, payCanceled);
-        payCanceled.publishAfterCommit();
+        if(this.getStatus().equals("PayCompleted")){
+            PayCompleted payCompleted = new PayCompleted();
+            BeanUtils.copyProperties(this, payCompleted);
+            payCompleted.publishAfterCommit();
+        }else if(this.getStatus().equals("PayCanceled")){
+            PayCanceled payCanceled = new PayCanceled();
+            BeanUtils.copyProperties(this, payCanceled);
+            payCanceled.publishAfterCommit();
+        }
 
 
     }
