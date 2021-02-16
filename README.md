@@ -48,7 +48,7 @@
 # 분석/설계
 
 ### Event Storming 결과
-![eventStorming](http://www.msaez.io/#/storming/6DFv42PbBMTgaRMLq0zSk0utFxr2/mine/c39bd5ee7b4fb979f840013088454074)
+![eventStorming](https://user-images.githubusercontent.com/47556407/108024072-3b136000-7067-11eb-8b42-170fc064c507.png)
 　  
 　     
 ### 기능적 요구사항 검증(1)
