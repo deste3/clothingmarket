@@ -30,7 +30,14 @@ spring:
         event-out:
           destination: clothingmarket
           contentType: application/json
-
+feign: 
+  hystrix: 
+    enabled: true 
+ 
+hystrix: 
+  command: 
+    default: 
+      execution.isolation.thread.timeoutInMilliseconds: 300 
 logging:
   level:
     org.hibernate.type: trace
