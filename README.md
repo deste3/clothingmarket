@@ -401,27 +401,27 @@ kubectl expose deploy gateway --type=LoadBalancer --port=8080 -n skuser03
 　  
 　  
    
-# Zreo-Downtown Deploy
+# Zero-Downtown Deploy
 
 * 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Autoscale 나 CB 설정을 제거함
 
-- seige 로 배포작업 직전에 워크로드를 모니터링 함.
+- siege 로 배포작업 직전에 워크로드를 모니터링 함.
 
-`siege -c100 -t80S -r10 -v --content-type "application/json" 'http://52.231.94.89:8080/reservations POST {"restaurantNo": "10", "day":"20210214"}'`
+`siege -c100 -t80S -v --content-type "application/json" 'http://20.194.19.238:8080/orders POST {"productId": "10", "Qty":"5"}'`
     
 　  
 　  
 
 - 새버전으로의 배포 시작
 ```
-kubectl set image deploy reservation reservation=skteam02.azurecr.io/reservation:r1 -n skteam02
+kubectl set image deploy order order=skuser03.azurecr.io/order:r1 -n skuser03
 ```
     
 　  
 　  
 ### readiness 옵션이 없는 경우 배포 중 서비스 요청처리 실패
 
-![20210215_174012_25](https://user-images.githubusercontent.com/77368612/107923856-6b022b00-6fb5-11eb-83ec-d9aff7aab485.png)
+![image](https://user-images.githubusercontent.com/47556407/108172175-d7109a80-713f-11eb-9466-cceaec00d656.png)
     
 　  
 　  
@@ -430,7 +430,7 @@ kubectl set image deploy reservation reservation=skteam02.azurecr.io/reservation
 
 - deployment.yaml 의 readiness probe 의 설정
 
-![20210215_174655](https://user-images.githubusercontent.com/77368612/107924141-d6e49380-6fb5-11eb-98e9-73c36346fca8.png)
+![image](https://user-images.githubusercontent.com/47556407/108172274-f90a1d00-713f-11eb-903d-c29c1e109f69.png)
     
 　  
 　  
@@ -439,13 +439,13 @@ kubectl set image deploy reservation reservation=skteam02.azurecr.io/reservation
 kubectl apply -f kubernetes/deployment.yaml
 # 이미지 변경 배포 한 후 Availability 확인:
 ```
-![20210215_174012_27](https://user-images.githubusercontent.com/77368612/107924279-0dbaa980-6fb6-11eb-985b-0891124e9e24.png)
+![image](https://user-images.githubusercontent.com/47556407/108172582-5900c380-7140-11eb-90ff-1061ad2f1e36.png)
     
 　  
 　  
 - 배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
 
-![20210215_174012_28](https://user-images.githubusercontent.com/77368612/107924289-114e3080-6fb6-11eb-935f-a21ea1d7b33c.png)
+![image](https://user-images.githubusercontent.com/47556407/108172642-68800c80-7140-11eb-8830-0fbc2210c473.png)
     
 　  
 　      
@@ -458,18 +458,18 @@ kubectl apply -f kubernetes/deployment.yaml
 
 - deployment.yml 에 Liveness Probe 옵션 추가
 
-![image](https://user-images.githubusercontent.com/77368612/107970557-99532b00-6ff4-11eb-82bf-312a9f8f3c8b.png)
+![image](https://user-images.githubusercontent.com/47556407/108172764-8f3e4300-7140-11eb-8f83-e87f4a2d6b3f.png)
     
 　  
 　  
-- reservation pod에 liveness가 적용된 부분 확인
+- order pod에 liveness가 적용된 부분 확인
 
-![20210215_181110_32](https://user-images.githubusercontent.com/77368612/107926561-37c19b00-6fb9-11eb-9fc0-98b22505b3bd.png)
+![image](https://user-images.githubusercontent.com/47556407/108173813-f5779580-7141-11eb-90d7-906091ed9027.png)
 
     
 　  
 　  
-- reservation 서비스의 liveness가 발동되어 3번 retry 시도 한 부분 확인
+- order 서비스의 liveness가 발동되어 7번 retry 시도 한 부분 확인
 
-![20210215_180742_31](https://user-images.githubusercontent.com/77368612/107926211-c255ca80-6fb8-11eb-93b5-200e3e2c36a0.png)
+![image](https://user-images.githubusercontent.com/47556407/108174264-8f3f4280-7142-11eb-9941-170e07025c05.png)
 
