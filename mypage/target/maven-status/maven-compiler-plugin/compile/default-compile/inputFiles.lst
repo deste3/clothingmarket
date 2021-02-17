@@ -5,6 +5,7 @@
 /home/project/default-env/clothingmarket/mypage/src/main/java/clothingmarket/DeliveryStarted.java
 /home/project/default-env/clothingmarket/mypage/src/main/java/clothingmarket/MyPageRepository.java
 /home/project/default-env/clothingmarket/mypage/src/main/java/clothingmarket/MyPage.java
+/home/project/default-env/clothingmarket/mypage/src/main/java/clothingmarket/PayCanceled.java
 /home/project/default-env/clothingmarket/mypage/src/main/java/clothingmarket/MypageApplication.java
 /home/project/default-env/clothingmarket/mypage/src/main/java/clothingmarket/config/kafka/KafkaProcessor.java
 /home/project/default-env/clothingmarket/mypage/src/main/java/clothingmarket/OrderCanceled.java

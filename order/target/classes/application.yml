@@ -30,7 +30,6 @@ spring:
         event-out:
           destination: clothingmarket
           contentType: application/json
-
 logging:
   level:
     org.hibernate.type: trace
@@ -62,3 +61,7 @@ spring:
         event-out:
           destination: clothingmarket
           contentType: application/json
+api:
+  deposit:
+    url: http://deposit:8080
+
