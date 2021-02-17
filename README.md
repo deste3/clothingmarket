@@ -233,6 +233,7 @@ kubectl create deploy deposit --image=skuser03.azurecr.io/deposit:latest -n skus
    
 # Gateway
 - gateway > application.yml
+
 ![image](https://user-images.githubusercontent.com/47556407/108038063-c0097400-707d-11eb-9944-8b734b2f7dcf.png)
     
 　  
@@ -304,7 +305,7 @@ kubectl expose deploy gateway --type=LoadBalancer --port=8080 -n skuser03
 # Circuit Breaker
 ```
 1. 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함.  
-2. 시나리오는 예약(reservation)-->예치금 결제(deposit) 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 예치금 결제 요청이 과도할 경우 CB 를 통하여 장애격리.  
+2. 시나리오는 주문(order) --> 주문금액 결제(deposit) 시의 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 주문금액 결제 요청이 과도할 경우 CB 를 통하여 장애격리.  
 3. Hystrix 를 설정: 요청처리 쓰레드에서 처리시간이 300 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
 ```
 
@@ -315,24 +316,26 @@ kubectl expose deploy gateway --type=LoadBalancer --port=8080 -n skuser03
 
 - application.yml 설정
 
-![20210215_160633_19](https://user-images.githubusercontent.com/77368612/107915501-f379cf00-6fa7-11eb-9134-0aa25f7ce18b.png)
+![image](https://user-images.githubusercontent.com/47556407/108139128-c130b480-7102-11eb-919b-a64042c30132.png)
 
     
 　  
 
-- 피호출 서비스(예치금 결제:deposit) 의 임의 부하 처리  Reservation.java(entity)
+- 피호출 서비스(주문금액 결제:deposit) 의 임의 부하 처리  order.java(entity)
 
-![20210215_160633_20](https://user-images.githubusercontent.com/77368612/107915504-f4126580-6fa7-11eb-97a6-9c5f58ca0a46.png)
+![image](https://user-images.githubusercontent.com/47556407/108139181-da396580-7102-11eb-8588-fae0598381f7.png)
 
     
 　  
 　  
 
-`$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://52.231.94.89:8080/reservations POST {"restaurantNo": "10", "day":"20210214"}'`
+`$ siege -c255 -t60S -r10 -v --content-type "application/json" 'http://20.41.98.17:8080/orders POST {"productId": "10", "qty":"5"}'`
 
-- 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인 (동시사용자 100명, 60초 진행)
+- 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인 (동시사용자 255명, 60초 진행)
 
-![20210215_160633_7](https://user-images.githubusercontent.com/77368612/107916124-1bb5fd80-6fa9-11eb-8ee7-8a340d7a7682.png)
+![image](https://user-images.githubusercontent.com/47556407/108157604-7cb71000-7126-11eb-8b16-da6f29c89cb8.png)
+
+
 ```
 * 요청이 과도하여 CB를 동작함 요청을 차단
 * 요청을 어느정도 돌려보내고나니, 기존에 밀린 일들이 처리되었고, 회로를 닫아 요청을 다시 받기 시작
@@ -341,7 +344,8 @@ kubectl expose deploy gateway --type=LoadBalancer --port=8080 -n skuser03
     
 　  
 　  
-![20210215_152121_8](https://user-images.githubusercontent.com/77368612/107915450-d93ff100-6fa7-11eb-8ac6-78c508828b29.png)
+![image](https://user-images.githubusercontent.com/47556407/108157652-9c4e3880-7126-11eb-97a2-5f5ab36c3327.png)
+
 
 `운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌`
     
@@ -354,42 +358,42 @@ kubectl expose deploy gateway --type=LoadBalancer --port=8080 -n skuser03
 ```
 1. 앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 
 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.  
-2. 예치금 결제서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 
+2. 주문금액 결제서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 
 넘어서면 replica 를 10개까지 늘려준다.
 ```
 
-- 테스트를 위한 리소스 할당(reservation > deployment.yml)
+- 테스트를 위한 리소스 할당(order > deployment.yml)
 
-![20210215_170036_22](https://user-images.githubusercontent.com/77368612/107920178-dcd77600-6faf-11eb-829a-afd2be2be901.png)
+![image](https://user-images.githubusercontent.com/47556407/108158884-3ca55c80-7129-11eb-9b85-054afaac7e3d.png)
     
 　  
 　  
 
 ### autoscale out 설정 
 
-- kubectl autoscale deploy reservation --min=1 --max=10 --cpu-percent=15 -n skteam2
+- kubectl autoscale deploy order --min=1 --max=10 --cpu-percent=15 -n skuser03
 
-![20210215_170036_21](https://user-images.githubusercontent.com/77368612/107920351-2aec7980-6fb0-11eb-9e2a-98bc26e3c503.png)
+![image](https://user-images.githubusercontent.com/47556407/108158989-6eb6be80-7129-11eb-88c8-b79b2bb9891f.png)
     
 　  
 　  
 - CB 에서 했던 방식대로 워크로드를 1분 동안 걸어준다.
 
-`$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://52.231.94.89:8080/reservations POST {"restaurantNo": "10", "day":"20210214"}' `
+`$ siege -c255 -t120S -v --content-type "application/json" 'http://52.141.0.49:8080/orders POST {"productId": "10", "Qty":"5"}' `
 
     
 　  
 　  
 - 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
 
-`watch kubectl get all -n skteam02`
+`watch kubectl get all -n skuser03`
 
     
 　  
 　  
 - 어느정도 시간이 흐른 후 (약 30초) 스케일 아웃이 벌어지는 것을 확인할 수 있다:
 
-![20210215_170036_23](https://user-images.githubusercontent.com/77368612/107920537-77d05000-6fb0-11eb-9a64-ebcb5525793e.png)
+![image](https://user-images.githubusercontent.com/47556407/108164875-f81fbe00-7134-11eb-87b5-7ca950d77ab4.png)
     
 　  
 　  
